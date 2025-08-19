@@ -39,11 +39,20 @@ namespace Databases
             try
             {
                 // TODO: Set up database path using Application.persistentDataPath
-                _databasePath = "";
-                
+                _databasePath = Path.Combine(Application.persistentDataPath, "highscores.db");
+                //** Data will now be stored on the players device **//
+
+                //** following line is to debug the actual path **//
+                Debug.Log(Application.persistentDataPath);
+               //** Done**//
+
+
                 // TODO: Create SQLite connection
+                 _database = new SQLiteConnection(_databasePath);
+                //** Done **//
 
                 // TODO: Create tables for game data
+                _database.CreateTable<HighScore>();
 
                 Debug.Log($"Database initialized at: {_databasePath}");
             }
@@ -55,14 +64,25 @@ namespace Databases
         
         #region High Score Operations
         
-        /// TODO: Students will implement this method
+        /// TODO: Students will implement this method 2
         public void AddHighScore(string playerName, int score, string levelName = "Default")
         {
             try
             {
                 // TODO: Create a new HighScore object
+                HighScore newScore = new HighScore
+            {
+                PlayerName = playerName, // sets PlayerName property//
+                Score = score, //sets the score property//
+                LevelName = levelName // sets the LevelName property//
+            };
+            //Done//
+
+
                 // TODO: Insert it into the database using _database.Insert()
-                
+                _database.Insert(newScore);
+                //database inserted **Done** //
+
                 Debug.Log($"High score added: {playerName} - {score} points");
             }
             catch (Exception ex)
@@ -71,31 +91,45 @@ namespace Databases
             }
         }
         
-        /// TODO: Students will implement this method
-        public List<HighScore> GetTopHighScores(int limit = 10)
+        /// TODO: Students will implement this method 3
+        public List<HighScore> GetTopHighScores(int limit = 10) // default 10 // 
+
         {
             try
             {
                 // TODO: Query the database for top scores
-                
-                return new List<HighScore>(); // Placeholder - students will replace this
+
+                return _database.Table<HighScore>() // connection to the SQLite database file//
+
+                        .OrderByDescending(hs => hs.Score)
+                        .Take(limit)
+                        .ToList();
+                        // Done //
             }
             catch (Exception ex)
             {
-                Debug.LogError($"Failed to get high scores: {ex.Message}");
+                Debug.LogError($"Failed to get high scores: {ex.Message}"); // Log the error, prevents game from crashing//
                 return new List<HighScore>();
             }
         }
+        // Done //
         
-        /// TODO: Students will implement this method
-        public List<HighScore> GetHighScoresForLevel(string levelName, int limit = 10)
+        /// TODO: Students will implement this method 4
+        public List<HighScore> GetHighScoresForLevel(string levelName, int limit = 10) // default to 10//
         {
             try
             {
                 // TODO: Query the database for scores filtered by level
-                
-                return new List<HighScore>(); // Placeholder - students will replace this
-            }
+
+                return _database.Table<HighScore>() // connection to the SQLite database file//
+
+                 .Where(hs => hs.LevelName == levelName)   
+                 .OrderByDescending(hs => hs.Score)   // best to worst score//
+                 .Take(limit)  // limits the results//                          
+                 .ToList();                              
+             }
+                // Done, test in Unity!!//
+
             catch (Exception ex)
             {
                 Debug.LogError($"Failed to get level high scores: {ex.Message}");
@@ -107,7 +141,7 @@ namespace Databases
         
         #region Database Utility Methods
         
-        /// TODO: Students will implement this method
+        /// TODO: Students will implement this method 5
         public int GetHighScoreCount()
         {
             try
@@ -123,7 +157,7 @@ namespace Databases
             }
         }
         
-        /// TODO: Students will implement this method
+        /// TODO: Students will implement this method 6
         public void ClearAllHighScores()
         {
             try
