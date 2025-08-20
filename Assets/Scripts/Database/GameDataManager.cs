@@ -12,13 +12,13 @@ namespace Databases
     {
         [Header("Database Configuration")]
         [SerializeField] private string databaseName = "GameData.db";
-        
+
         private SQLiteConnection _database;
         private string _databasePath;
-        
+
         // Singleton pattern for easy access
         public static GameDataManager Instance { get; private set; }
-        
+
         private void Awake()
         {
             if (Instance == null)
@@ -32,7 +32,7 @@ namespace Databases
                 Destroy(gameObject);
             }
         }
-        
+
         /// TODO: Students will implement this method
         private void InitializeDatabase()
         {
@@ -44,11 +44,11 @@ namespace Databases
 
                 //** following line is to debug the actual path **//
                 Debug.Log(Application.persistentDataPath);
-               //** Done**//
+                //** Done**//
 
 
                 // TODO: Create SQLite connection
-                 _database = new SQLiteConnection(_databasePath);
+                _database = new SQLiteConnection(_databasePath);
                 //** Done **//
 
                 // TODO: Create tables for game data
@@ -61,9 +61,9 @@ namespace Databases
                 Debug.LogError($"Failed to initialize database: {ex.Message}");
             }
         }
-        
+
         #region High Score Operations
-        
+
         /// TODO: Students will implement this method 2
         public void AddHighScore(string playerName, int score, string levelName = "Default")
         {
@@ -71,12 +71,12 @@ namespace Databases
             {
                 // TODO: Create a new HighScore object
                 HighScore newScore = new HighScore
-            {
-                PlayerName = playerName, // sets PlayerName property//
-                Score = score, //sets the score property//
-                LevelName = levelName // sets the LevelName property//
-            };
-            //Done//
+                {
+                    PlayerName = playerName, // sets PlayerName property//
+                    Score = score, //sets the score property//
+                    LevelName = levelName // sets the LevelName property//
+                };
+                //Done//
 
 
                 // TODO: Insert it into the database using _database.Insert()
@@ -90,7 +90,7 @@ namespace Databases
                 Debug.LogError($"Failed to add high score: {ex.Message}");
             }
         }
-        
+
         /// TODO: Students will implement this method 3
         public List<HighScore> GetTopHighScores(int limit = 10) // default 10 // 
 
@@ -104,7 +104,7 @@ namespace Databases
                         .OrderByDescending(hs => hs.Score)
                         .Take(limit)
                         .ToList();
-                        // Done //
+                // Done //
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ namespace Databases
             }
         }
         // Done //
-        
+
         /// TODO: Students will implement this method 4
         public List<HighScore> GetHighScoresForLevel(string levelName, int limit = 10) // default to 10//
         {
@@ -123,12 +123,12 @@ namespace Databases
 
                 return _database.Table<HighScore>() // connection to the SQLite database file//
 
-                 .Where(hs => hs.LevelName == levelName)   
+                 .Where(hs => hs.LevelName == levelName)
                  .OrderByDescending(hs => hs.Score)   // best to worst score//
                  .Take(limit)  // limits the results//                          
-                 .ToList();                              
-             }
-                // Done, test in Unity!!//
+                 .ToList();
+            }
+            // Done, test in Unity!!//
 
             catch (Exception ex)
             {
@@ -136,19 +136,21 @@ namespace Databases
                 return new List<HighScore>();
             }
         }
-        
+
         #endregion
-        
+
         #region Database Utility Methods
-        
+
         /// TODO: Students will implement this method 5
         public int GetHighScoreCount()
         {
             try
             {
                 // TODO: Count the total number of high scores
-                
-                return 0; // Placeholder - students will replace this
+
+                // Placeholder - students will replace this
+                return _database.Table<HighScore>().Count();
+                // since using SQLite databes ** Done//
             }
             catch (Exception ex)
             {
@@ -156,14 +158,18 @@ namespace Databases
                 return 0;
             }
         }
-        
+        // Done//
+
+
         /// TODO: Students will implement this method 6
         public void ClearAllHighScores()
         {
             try
             {
                 // TODO: Delete all high scores from the database
-                
+                _database.DeleteAll<HighScore>();
+                //Done//
+
                 Debug.Log("All high scores cleared");
             }
             catch (Exception ex)
@@ -171,7 +177,7 @@ namespace Databases
                 Debug.LogError($"Failed to clear high scores: {ex.Message}");
             }
         }
-        
+
         /// <summary>
         /// Close the database connection when the application quits
         /// </summary>
@@ -179,7 +185,8 @@ namespace Databases
         {
             _database?.Close();
         }
-        
+
         #endregion
     }
 }
+// Done//

@@ -43,6 +43,7 @@ namespace Databases.UI
 
             UpdateDisplay("Database Test UI Ready\nClick buttons to test database operations");
         }
+        //Done, calls the GameManager.cs script//
 
         /// TODO: Students will implement this method
         private void OnAddHighScore()
@@ -55,6 +56,8 @@ namespace Databases.UI
                 if (int.TryParse(scoreText, out int score))
                 {
                     // TODO: Use GameDataManager to add the high score
+                    GameDataManager.Instance.AddHighScore(playerName, score);
+                    // Done//
 
                     UpdateDisplay($"High score added: {playerName} - {score} points");
 
@@ -80,7 +83,8 @@ namespace Databases.UI
             {
                 // TODO: Use GameDataManager to get high scores
 
-                var scores = new List<HighScore>(); // Placeholder - students will replace this
+                var scores = GameDataManager.Instance.GetTopHighScores(10);
+                // Refer to GameDataManager.cs ** Done//
 
                 if (scores.Count == 0)
                 {
@@ -110,7 +114,7 @@ namespace Databases.UI
             {
                 // TODO: Use GameDataManager to clear all high scores
 
-                UpdateDisplay("All high scores cleared from database");
+                GameDataManager.Instance.ClearAllHighScores();
             }
             catch (System.Exception ex)
             {
@@ -127,3 +131,5 @@ namespace Databases.UI
         }
     }
 }
+
+//Done//
